@@ -1,35 +1,45 @@
 const fs = require("fs")
+const { createSpinner } = require("nanospinner")
 
-const SENT_FILE = "./sent.txt"
-
-function getSent() {
-	if (!fs.existsSync(SENT_FILE)) return []
-	return fs.readFileSync(SENT_FILE, "utf-8").split("\n").filter(Boolean)
+function createFileIfNotExists(filePath) {
+	if (!fs.existsSync(filePath)) {
+		fs.writeFileSync(filePath, "")
+	}
 }
 
-function setSent(id) {
-	fs.appendFileSync(SENT_FILE, id + "\n")
+function getSent(filePath) {
+	createFileIfNotExists(filePath)
+	return fs
+		.readFileSync(filePath, "utf-8")
+		.split("\n")
+		.map((line) => line.trim())
+		.filter(Boolean)
 }
 
-function delay(minSec, maxSec) {
-	const totalMs = (Math.random() * (maxSec - minSec) + minSec) * 1000
-	let remaining = Math.ceil(totalMs / 1000)
-
-	process.stdout.write(`[DELAY] Waiting ${remaining}s...`)
-
-	const interval = setInterval(() => {
-		remaining--
-		process.stdout.write(`\r[DELAY] ${remaining}s...   `)
-		if (remaining <= 0) clearInterval(interval)
-	}, 1000)
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			clearInterval(interval)
-			process.stdout.write(`\r[DELAY] Done waiting.            \n`)
-			resolve()
-		}, totalMs)
-	})
+function setSent(filePath, id) {
+	fs.appendFileSync(filePath, `${id}\n`)
 }
 
-module.exports = { getSent, setSent, delay }
+function randomLetters(length = 10) {
+	const ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
+	let result = ""
+	for (let i = 0; i < length; i++) {
+		result += ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
+	}
+	return result
+}
+
+async function delay(minSec, maxSec) {
+	const totalSeconds = Math.ceil(Math.random() * (maxSec - minSec) + minSec)
+	const spinner = createSpinner(`Waiting ${totalSeconds}s...`).start()
+
+	for (let remaining = totalSeconds; remaining > 0; remaining--) {
+		spinner.update({ text: `Waiting ${remaining}s...` })
+		await new Promise((resolve) => setTimeout(resolve, 1000))
+	}
+
+	spinner.success({ text: "Done waiting." })
+}
+
+module.exports = { getSent, setSent, randomLetters, delay }

@@ -3,6 +3,8 @@
 Esse projeto é para fins de estudo. Siga as diretrizes e Termos de Serviço do WhatsApp. Qualquer dano causado é de responsabilidade do usuário.
 Usar isso com um número real pode levar a suspensão ou banimento do mesmo.
 
+Atualição: Usar isso VAI COM TODA CERTEZA levar a suspensão, e então banimento do número (mas foi bem legal de fazer (e de ver funcionar))
+
 # Dependencias:
 
 - Node
